@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="nl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>De Statiemanillers — Kaartavond</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --bg:#0f172a;--surface:#1e293b;--surface2:#263348;--border:#334155;
+  --text:#f1f5f9;--text2:#94a3b8;--text3:#64748b;
+  --accent:#3b82f6;--accent-bg:rgba(59,130,246,0.12);
+  --success:#22c55e;--success-bg:rgba(34,197,94,0.12);
+  --warning:#f59e0b;--warning-bg:rgba(245,158,11,0.12);
+  --danger:#ef4444;--danger-bg:rgba(239,68,68,0.12);
+  --radius:8px;--font:system-ui,-apple-system,sans-serif
+}
+body{font-family:var(--font);background:var(--bg);color:var(--text);min-height:100vh}
+.wrap{max-width:680px;margin:0 auto;padding:1rem}
+h1{font-size:18px;font-weight:600;margin-bottom:0.25rem}
+.subtitle{font-size:12px;color:var(--text3);margin-bottom:1.5rem}
+.tabs{display:flex;gap:2px;border-bottom:1px solid var(--border);margin-bottom:1.25rem;overflow-x:auto}
+.tab{padding:8px 14px;font-size:13px;font-weight:500;border:none;background:transparent;color:var(--text2);cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;white-space:nowrap;font-family:var(--font)}
+.tab.active{color:var(--text);border-bottom-color:var(--accent)}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:1rem 1.25rem;margin-bottom:1rem}
+.section-title{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:0.05em;margin-bottom:0.6rem}
+.badge{display:inline-flex;align-items:center;padding:2px 8px;border-radius:6px;font-size:11px;font-weight:500}
+.badge-success{background:var(--success-bg);color:var(--success)}
+.badge-warning{background:var(--warning-bg);color:var(--warning)}
+.badge-accent{background:var(--accent-bg);color:var(--accent)}
+.badge-muted{background:var(--surface2);color:var(--text2);border:1px solid var(--border)}
+.btn{padding:6px 14px;border-radius:var(--radius);border:1px solid var(--border);background:transparent;font-size:13px;font-weight:500;cursor:pointer;color:var(--text);font-family:var(--font)}
+.btn:hover{background:var(--surface2)}
+.btn-primary{background:var(--accent);color:white;border-color:var(--accent)}
+.btn-primary:hover{opacity:0.9}
+.btn-sm{padding:4px 10px;font-size:12px}
+.btn-danger{border-color:var(--danger);color:var(--danger)}
+.btn-danger:hover{background:var(--danger-bg)}
+.btn-success{background:var(--success);color:white;border-color:var(--success)}
+.action-row{display:flex;gap:6px;margin-top:0.75rem;flex-wrap:wrap;align-items:center}
+.search-input{width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:13px;margin-bottom:0.5rem;font-family:var(--font)}
+.sort-row{display:flex;gap:6px;margin-bottom:0.75rem}
+.sort-btn{padding:4px 10px;font-size:11px;border:1px solid var(--border);border-radius:var(--radius);background:transparent;cursor:pointer;color:var(--text2);font-family:var(--font)}
+.sort-btn.active{background:var(--accent-bg);border-color:var(--accent);color:var(--accent);font-weight:500}
+.leden-table{width:100%;border-collapse:collapse;font-size:13px}
+.leden-table th{text-align:left;padding:5px 8px;font-size:11px;font-weight:500;color:var(--text2);border-bottom:1px solid var(--border)}
+.leden-table td{padding:5px 8px;border-bottom:1px solid var(--border)}
+.leden-table tr.present td{background:var(--success-bg)}
+.leden-table tr.present .naam{color:var(--success);font-weight:500}
+.leden-table tr{cursor:pointer}
+.leden-table tr:hover td{background:var(--surface2)}
+.check{width:18px;height:18px;border-radius:4px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;color:white}
+.check.on{background:var(--success);border-color:var(--success)}
+.tafel-grid{display:grid;grid-template-columns:1fr 1fr;gap:0.6rem}
+.tafel-card{background:var(--surface);border:1px solid var(--border);border-radius:12px;padding:0.75rem 1rem}
+.speler-row{display:flex;align-items:center;gap:6px;padding:3px 0;font-size:12px;border-bottom:1px solid var(--border)}
+.speler-row:last-child{border-bottom:none}
+.speler-pos{font-size:10px;color:var(--text3);min-width:14px}
+.speler-nr{font-size:10px;color:var(--text3)}
+.speler-ini{width:22px;height:22px;border-radius:50%;background:var(--accent-bg);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:500;flex-shrink:0}
+.conflict-warn{background:var(--warning-bg);border:1px solid var(--warning);border-radius:var(--radius);padding:6px 10px;font-size:12px;color:var(--warning);margin-top:0.75rem}
+.boom-block{margin-bottom:0.75rem;border:1px solid var(--border);border-radius:var(--radius);overflow:hidden}
+.boom-header{background:var(--surface2);padding:6px 10px;font-size:12px;font-weight:500;border-bottom:1px solid var(--border)}
+.boom-duo-row{display:grid;grid-template-columns:1fr auto 1fr;gap:8px;align-items:center;padding:8px 10px}
+.duo-label{font-size:10px;color:var(--text2);margin-bottom:2px}
+.duo-names{font-size:11px;font-weight:500;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.duo-input{width:100%;padding:6px 8px;border:1px solid var(--border);border-radius:var(--radius);font-size:15px;font-weight:500;background:var(--surface2);color:var(--text);font-family:var(--font);text-align:center}
+.duo-input.winner{border-color:var(--success);background:var(--success-bg);color:var(--success)}
+.vs-divider{font-size:11px;color:var(--text3);text-align:center}
+.klass-table{width:100%;border-collapse:collapse;font-size:12px}
+.klass-table th{text-align:left;padding:5px 6px;font-size:10px;font-weight:500;color:var(--text2);border-bottom:1px solid var(--border)}
+.klass-table td{padding:5px 6px;border-bottom:1px solid var(--border)}
+.sd-list{display:flex;flex-direction:column;gap:6px}
+.sd-item{display:flex;align-items:center;justify-content:space-between;padding:8px 12px;border:1px solid var(--border);border-radius:var(--radius);font-size:13px;cursor:pointer}
+.sd-item:hover{background:var(--surface2)}
+.sd-item.definitief{border-color:var(--success)}
+.score-status-bar{background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius);padding:8px 12px;margin-bottom:0.75rem;font-size:12px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.progress-bar{height:6px;border-radius:3px;background:var(--border);flex:1;overflow:hidden}
+.progress-fill{height:100%;border-radius:3px;background:var(--accent);transition:width 0.3s}
+.progress-fill.done{background:var(--success)}
+select{padding:5px 10px;border:1px solid var(--border);border-radius:var(--radius);background:var(--surface2);color:var(--text);font-size:13px;font-family:var(--font)}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <h1>De Statiemanillers</h1>
+  <div class="subtitle">Kaartavond — Seizoen 2026-2027</div>
+  <div class="tabs">
+    <button class="tab active" onclick="showTab('speeldagen')">Speeldagen</button>
+    <button class="tab" onclick="showTab('aanmelding')">Aanmelding</button>
+    <button class="tab" onclick="showTab('loting')">Loting</button>
+    <button class="tab" onclick="showTab('scores')">Scores</button>
+    <button class="tab" onclick="showTab('klassement')">Klassement</button>
+  </div>
+  <div id="tab-speeldagen"></div>
+  <div id="tab-aanmelding" style="display:none"></div>
+  <div id="tab-loting" style="display:none"></div>
+  <div id="tab-scores" style="display:none"></div>
+  <div id="tab-klassement" style="display:none"></div>
+</div>
+<script>
+const LEDEN=[
+  {id:1,naam:"Dehaudt",vnaam:"Dries",bestuur:true,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:2,naam:"Demasure",vnaam:"Niels",bestuur:true,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:3,naam:"Geldof",vnaam:"Thomas",bestuur:true,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:4,naam:"Vansteenkiste",vnaam:"Kurt",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:5,naam:"Deblauwe",vnaam:"Vincent",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[23]},
+  {id:6,naam:"Dejonghe",vnaam:"Peter",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:7,naam:"Seurinck",vnaam:"Geert",bestuur:false,enkelLaag:true,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:8,naam:"Noyen",vnaam:"Thijs",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:9,naam:"Glorieux",vnaam:"Pascal",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:10,naam:"Vanderheeren",vnaam:"Nico",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:11,naam:"Debusseré",vnaam:"Vincent",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:12,naam:"Decreus",vnaam:"Ann",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:13,naam:"Vandepitte",vnaam:"Ivan",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:14,naam:"Vanhaezebrouck",vnaam:"Sean",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:15,naam:"Danis",vnaam:"Erwin",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:16,naam:"Deweer",vnaam:"Xavier",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:17,naam:"Vandewalle",vnaam:"Wesley",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:18,naam:"Vercruysse",vnaam:"Leentje",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:19,naam:"Vanhecke",vnaam:"Johan",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:20,naam:"Braeckevelt",vnaam:"Cindy",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:21,naam:"Evers",vnaam:"Joop",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:22,naam:"Derluyn",vnaam:"Louis",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:23,naam:"Eggermont",vnaam:"Philip",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[5]},
+  {id:24,naam:"Deplancke",vnaam:"Wim",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:25,naam:"Deplancke",vnaam:"Jarne",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:26,naam:"Feys",vnaam:"Lothar",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[37]},
+  {id:27,naam:"Vanhoyland",vnaam:"Yves",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:28,naam:"Vangroenweghe",vnaam:"Koen",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:29,naam:"Vercaempt",vnaam:"Carl",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:30,naam:"Maes",vnaam:"Lieven",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:31,naam:"Spriet",vnaam:"Christophe",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:32,naam:"Kesteloot",vnaam:"Simon",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:33,naam:"Devolder",vnaam:"Eddy",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:34,naam:"Eeckhout",vnaam:"Christophe",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:35,naam:"Samyn",vnaam:"Arne",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:36,naam:"Lapin",vnaam:"Herwig",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:37,naam:"Opsomer",vnaam:"Dennis",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[26]},
+  {id:38,naam:"Declerck",vnaam:"Stijn",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:39,naam:"Dejonghe",vnaam:"Veronique",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:40,naam:"Dejonghe",vnaam:"Roger",bestuur:false,enkelLaag:true,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:41,naam:"Vercaempt",vnaam:"Henri",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:42,naam:"Pattyn",vnaam:"Diederik",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:43,naam:"Vanthournout",vnaam:"Roger",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:44,naam:"Gheysen",vnaam:"Guido",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:45,naam:"Rogiers",vnaam:"Gabrio",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:46,naam:"Vanderstraeten",vnaam:"Hannes",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:47,naam:"Geldhof",vnaam:"Thomas",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:48,naam:"Vercaempt",vnaam:"Louis",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:49,naam:"Verhelst",vnaam:"Isaura",bestuur:false,enkelLaag:false,enkelVerandaLaag:true,vermijdIds:[]},
+  {id:50,naam:"Verstraete",vnaam:"Bruno",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:51,naam:"Defever",vnaam:"Jurgen",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:52,naam:"Godefroidt",vnaam:"Vincent",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:53,naam:"Godefroidt",vnaam:"Jacky",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:54,naam:"Christiaens",vnaam:"Jonas",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:55,naam:"Kindt",vnaam:"Brecht",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:56,naam:"Cleppe",vnaam:"Theo",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:57,naam:"Dewulf",vnaam:"Heidi",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:58,naam:"Dejonghe",vnaam:"Thibaut",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:59,naam:"Vanhauwere",vnaam:"Marc",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]},
+  {id:60,naam:"Olivier",vnaam:"Maxim",bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]}
+];
+const TAFELS=[
+  {nr:1,ruimte:"Veranda",type:"laag"},{nr:2,ruimte:"Veranda",type:"laag"},
+  {nr:3,ruimte:"Veranda",type:"hoog"},{nr:4,ruimte:"Veranda",type:"hoog"},
+  {nr:5,ruimte:"Café",type:"hoog"},{nr:6,ruimte:"Café",type:"hoog"},{nr:7,ruimte:"Café",type:"hoog"},
+  {nr:8,ruimte:"Café",type:"laag"},{nr:9,ruimte:"Café",type:"laag"},{nr:10,ruimte:"Café",type:"laag"},
+  {nr:11,ruimte:"Café",type:"laag"},{nr:12,ruimte:"Café",type:"laag"},
+  {nr:13,ruimte:"Zaaltje",type:"laag"},{nr:14,ruimte:"Zaaltje",type:"laag"},{nr:15,ruimte:"Zaaltje",type:"laag"}
+];
+const VW_IDS=[61,62,63];
+const VW_NAMEN=['Chinese vrijwilliger 1','Chinese vrijwilliger 2','Chinese vrijwilliger 3'];
+const STORE='statiem_v7';
+let db={speeldagen:{},huidigeSd:null};
+try{const d=JSON.parse(localStorage.getItem(STORE)||'null');if(d)db=d;}catch(e){}
+let huidigeSd=db.huidigeSd||null;
+let ledenSort='nr';
+function getLid(id){const vwIdx=VW_IDS.indexOf(id);if(vwIdx>=0)return{id,vnaam:VW_NAMEN[vwIdx],naam:'',bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[],isVW:true};return LEDEN.find(l=>l.id===id)||{id,vnaam:'?',naam:'',bestuur:false,enkelLaag:false,enkelVerandaLaag:false,vermijdIds:[]};}
+function fn(l){return l.vnaam+(l.naam?' '+l.naam:'');}
+function buildShortNames(ids){const result={};const byVnaam={};for(const id of ids){const l=getLid(id);if(l.isVW){result[id]='Vrijwilliger';continue;}const v=l.vnaam;if(!byVnaam[v])byVnaam[v]=[];byVnaam[v].push({id,l});}for(const v of Object.keys(byVnaam)){const groep=byVnaam[v];if(groep.length===1){const l=groep[0].l;result[groep[0].id]=l.naam?`${l.vnaam} ${l.naam[0]}.`:l.vnaam;}else{for(const{id,l}of groep){if(!l.naam){result[id]=l.vnaam;continue;}let len=1;while(len<=l.naam.length){const prefix=l.naam.substring(0,len);const anderen=groep.filter(g=>g.id!==id&&g.l.naam&&g.l.naam.substring(0,len)===prefix);if(anderen.length===0)break;len++;}result[id]=`${l.vnaam} ${l.naam.substring(0,len)}.`;}}}return result;}
+function save(){db.huidigeSd=huidigeSd;try{localStorage.setItem(STORE,JSON.stringify(db));}catch(e){}}
+function getSd(){return huidigeSd&&db.speeldagen[huidigeSd]?db.speeldagen[huidigeSd]:null;}
+function showTab(t){['speeldagen','aanmelding','loting','scores','klassement'].forEach(n=>{document.getElementById('tab-'+n).style.display=n===t?'':'none';});document.querySelectorAll('.tab').forEach((b,i)=>{b.classList.toggle('active',['speeldagen','aanmelding','loting','scores','klassement'][i]===t);});if(t==='speeldagen')renderSpeeldagen();if(t==='aanmelding')renderAanmelding();if(t==='loting')renderLoting();if(t==='scores')renderScores();if(t==='klassement')renderKlassement();}
+function nieuweSd(nr){const key='sd_'+nr;if(db.speeldagen[key]&&!confirm(`Speeldag ${nr} bestaat al. Overschrijven?`))return;db.speeldagen[key]={nr,aanwezigen:[],tafels:[],scores:{},status:'opmaak'};huidigeSd=key;save();showTab('aanmelding');}
+function openSd(key){huidigeSd=key;save();showTab('aanmelding');}
+function wisSd(key,e){e.stopPropagation();const sd=db.speeldagen[key];if(sd.status==='definitief'){alert('Een definitieve speeldag kan niet gewist worden.');return;}if(!confirm(`Speeldag ${sd.nr} wissen?`))return;delete db.speeldagen[key];if(huidigeSd===key)huidigeSd=null;save();renderSpeeldagen();}
+function definitiefSd(key,e){if(e)e.stopPropagation();const sd=db.speeldagen[key];if(!sd)return;if(!confirm('Speeldag definitief opslaan? Dit kan niet ongedaan gemaakt worden.'))return;sd.status='definitief';save();showTab('klassement');}
+function renderSpeeldagen(){const el=document.getElementById('tab-speeldagen');const sds=Object.entries(db.speeldagen).sort((a,b)=>a[1].nr-b[1].nr);el.innerHTML=`<div class="card"><div style="font-size:14px;font-weight:600;margin-bottom:0.75rem">Seizoen 2026-2027</div><div class="section-title">Nieuwe speeldag</div><div style="display:grid;grid-template-columns:repeat(5,1fr);gap:6px;margin-bottom:1rem">${[1,2,3,4,5,6,7,8,9,10].map(i=>`<button class="btn btn-sm" onclick="nieuweSd(${i})">Dag ${i}</button>`).join('')}</div><div class="section-title">Opgeslagen speeldagen</div>${!sds.length?'<div style="color:var(--text3);font-size:13px">Nog geen speeldagen.</div>':`<div class="sd-list">${sds.map(([key,sd])=>`<div class="sd-item ${sd.status==='definitief'?'definitief':''}" onclick="openSd('${key}')"><div style="display:flex;align-items:center;gap:8px"><span style="font-weight:500">Speeldag ${sd.nr}</span><span class="badge ${sd.status==='definitief'?'badge-success':'badge-warning'}">${sd.status==='definitief'?'definitief':'in opmaak'}</span></div><div style="display:flex;align-items:center;gap:6px"><span style="font-size:12px;color:var(--text2)">${sd.aanwezigen.filter(id=>id<=60).length} leden</span>${sd.status!=='definitief'?`<button class="btn btn-sm btn-danger" onclick="wisSd('${key}',event)" style="font-size:11px">Wis</button>`:''}</div></div>`).join('')}</div>`}</div>`;}
+function renderAanmelding(){const el=document.getElementById('tab-aanmelding');const sd=getSd();if(!sd){el.innerHTML='<div class="card"><div style="color:var(--text3);font-size:13px">Selecteer eerst een speeldag.</div></div>';return;}const aanw=new Set(sd.aanwezigen);const nAanw=aanw.size;const rest=nAanw%4;const chCnt=VW_IDS.filter(id=>aanw.has(id)).length;const q=(document.getElementById('ls')||{value:''}).value||'';let lijst=[...LEDEN];if(q)lijst=lijst.filter(l=>(l.vnaam+' '+l.naam+' '+l.id).toLowerCase().includes(q.toLowerCase()));if(ledenSort==='naam')lijst.sort((a,b)=>a.naam.localeCompare(b.naam));else lijst.sort((a,b)=>a.id-b.id);const bestuurAanw=LEDEN.filter(l=>l.bestuur&&aanw.has(l.id));const vwAanw=VW_IDS.filter(id=>aanw.has(id));let statusHtml='';if(nAanw>0){if(rest===0)statusHtml=`<span class="badge badge-success">Deelbaar door 4</span>`;else statusHtml=`<span class="badge badge-warning">${4-rest} extra nodig</span>`;}el.innerHTML=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem"><div><div style="font-size:14px;font-weight:600">Speeldag ${sd.nr}</div><div style="font-size:11px;color:${sd.status==='definitief'?'var(--success)':'var(--text3)'}">${sd.status==='definitief'?'Definitief opgeslagen':'In opmaak'}</div></div><div style="display:flex;align-items:center;gap:8px"><span style="font-size:20px;font-weight:600">${nAanw}</span><div><div style="font-size:11px;color:var(--text2)">aanwezig</div>${statusHtml}</div></div></div>${vwAanw.length>0?`<div style="background:var(--accent-bg);border:1px solid var(--accent);border-radius:var(--radius);padding:6px 10px;font-size:12px;color:var(--accent);margin-bottom:0.75rem;display:flex;align-items:center;gap:8px;flex-wrap:wrap">${vwAanw.map(id=>`<span>${VW_NAMEN[VW_IDS.indexOf(id)]} <button class="btn btn-sm" style="font-size:11px;padding:1px 6px" onclick="toggleAanw(${id})">×</button></span>`).join('')}</div>`:''}${rest!==0&&nAanw>0?`<div class="conflict-warn">Niet deelbaar door 4.</div><div class="action-row" style="margin-top:0.5rem">${chCnt<3?`<button class="btn btn-sm" onclick="addVW()">+ Chinese vrijwilliger (${chCnt}/3)</button>`:`<span class="badge badge-warning">Max. 3</span>`}${bestuurAanw.map(b=>`<button class="btn btn-sm" onclick="toggleAanw(${b.id})">Schrap ${b.vnaam}</button>`).join('')}</div>`:''}<input class="search-input" id="ls" type="text" placeholder="Zoek op naam of nummer..." value="${q}" oninput="renderAanmelding()" style="margin-top:0.75rem"><div class="sort-row"><button class="sort-btn ${ledenSort==='nr'?'active':''}" onclick="ledenSort='nr';renderAanmelding()">Op nummer</button><button class="sort-btn ${ledenSort==='naam'?'active':''}" onclick="ledenSort='naam';renderAanmelding()">Op naam</button></div><div style="overflow-x:auto"><table class="leden-table"><thead><tr><th style="width:32px"></th><th style="width:28px">Nr</th><th>Familienaam</th><th>Voornaam</th><th style="width:32px"></th></tr></thead><tbody>${lijst.map(l=>`<tr class="${aanw.has(l.id)?'present':''}" onclick="toggleAanw(${l.id})"><td><div class="check ${aanw.has(l.id)?'on':''}">${aanw.has(l.id)?`<svg width="10" height="10" viewBox="0 0 10 10"><polyline points="1.5,5 4,7.5 8.5,2.5" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>`:''}</div></td><td style="color:var(--text3);font-size:11px">${l.id}</td><td class="naam">${l.naam}</td><td class="naam">${l.vnaam}</td><td>${l.bestuur?`<span class="badge badge-muted" style="font-size:10px">B</span>`:''}</td></tr>`).join('')}</tbody></table></div><div style="margin-top:0.5rem;font-size:11px;color:var(--text3)">${lijst.length} van ${LEDEN.length} leden</div><div class="action-row" style="margin-top:0.75rem"><button class="btn btn-primary" onclick="showTab('loting')">Naar loting</button><button class="btn btn-sm" onclick="allesWeg()">Wis alles</button><button class="btn btn-sm" onclick="showTab('speeldagen')">Overzicht</button></div></div>`;}
+function toggleAanw(id){const sd=getSd();if(!sd||sd.status==='definitief')return;const s=new Set(sd.aanwezigen);if(s.has(id))s.delete(id);else s.add(id);sd.aanwezigen=[...s];save();renderAanmelding();}
+function addVW(){const sd=getSd();if(!sd)return;const s=new Set(sd.aanwezigen);for(const id of VW_IDS){if(!s.has(id)){s.add(id);break;}}sd.aanwezigen=[...s];save();renderAanmelding();}
+function allesWeg(){const sd=getSd();if(!sd||sd.status==='definitief')return;sd.aanwezigen=[];save();renderAanmelding();}
+function shuffle(a){const r=[...a];for(let i=r.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[r[i],r[j]]=[r[j],r[i]];}return r;}
+function conflict(a,b){const la=getLid(a),lb=getLid(b);return la.vermijdIds.includes(b)||lb.vermijdIds.includes(a);}
+function tafelConflict(ids,nieuw){for(const id of ids)if(conflict(id,nieuw))return true;return false;}
+function kanAanTafel(lid,tafel){if(lid.enkelVerandaLaag&&!(tafel.ruimte==='Veranda'&&tafel.type==='laag'))return false;if(lid.enkelLaag&&tafel.type!=='laag')return false;return true;}
+function doLoting(){const sd=getSd();if(!sd)return;const ids=sd.aanwezigen;const nT=ids.length/4;const gT=TAFELS.slice(0,nT);const tb=gT.map(t=>({tafel:t,spelers:[]}));const beperkt=shuffle(ids.filter(id=>{const l=getLid(id);return l.enkelVerandaLaag||l.enkelLaag;}));const rest=shuffle(ids.filter(id=>{const l=getLid(id);return !l.enkelVerandaLaag&&!l.enkelLaag;}));for(const id of [...beperkt,...rest]){const l=getLid(id);const kandidaten=tb.filter(t=>t.spelers.length<4&&kanAanTafel(l,t.tafel)&&!tafelConflict(t.spelers,id));const fallback=tb.filter(t=>t.spelers.length<4&&kanAanTafel(l,t.tafel));const pool=kandidaten.length>0?kandidaten:fallback;if(pool.length>0){const keuze=pool[Math.floor(Math.random()*pool.length)];keuze.spelers.push(id);}}sd.tafels=tb.map(t=>({tafel:t.tafel,spelers:t.spelers}));save();}
+function renderLoting(){const el=document.getElementById('tab-loting');const sd=getSd();if(!sd){el.innerHTML='<div class="card"><div style="color:var(--text3);font-size:13px">Selecteer eerst een speeldag.</div></div>';return;}const nAanw=sd.aanwezigen.length;const klaar=nAanw>0&&nAanw%4===0;const groepen={};(sd.tafels||[]).forEach(t=>{const r=t.tafel.ruimte;if(!groepen[r])groepen[r]=[];groepen[r].push(t);});const shortNames=buildShortNames(sd.aanwezigen);let th='';for(const[ruimte,ts]of Object.entries(groepen)){th+=`<div class="section-title" style="margin-top:1rem">${ruimte}</div><div class="tafel-grid">`;for(const t of ts){th+=`<div class="tafel-card"><div style="display:flex;justify-content:space-between;align-items:baseline;margin-bottom:0.5rem"><span style="font-size:13px;font-weight:600">Tafel ${t.tafel.nr}</span><span style="font-size:10px;color:var(--text3)">${t.tafel.type}</span></div>${t.spelers.map((id,i)=>{const l=getLid(id);const ini=l.isVW?'VW':((l.vnaam[0]||'')+(l.naam?l.naam[0]:'')).toUpperCase();return`<div class="speler-row"><span class="speler-pos">${i+1}</span><div class="speler-ini" style="${l.isVW?'background:var(--warning-bg);color:var(--warning)':''}">${ini}</div><span style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"><span class="speler-nr">${id<=60?id+' ':''}</span>${fn(l)}</span></div>`;}).join('')}</div>`;}th+='</div>';}el.innerHTML=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem"><div><div style="font-size:14px;font-weight:600">Speeldag ${sd.nr}</div><div style="font-size:12px;color:var(--text2)">${nAanw} aanwezigen — ${(nAanw/4)|0} tafels</div></div>${klaar?`<button class="btn btn-primary" onclick="doLoting();renderLoting()">Loot tafels</button>`:`<span class="badge badge-warning">Aanmelding niet klaar</span>`}</div>${th||(klaar?'<div style="color:var(--text3);font-size:13px">Klik op Loot tafels.</div>':'<div style="color:var(--text3);font-size:13px">Aanmelding niet in orde.</div>')}${(sd.tafels||[]).length>0?`<div class="action-row" style="margin-top:0.75rem"><button class="btn btn-primary" onclick="showTab('scores')">Naar scores</button></div>`:''}</div>`;}
+function getDuos(ti,bn){const sd=getSd();const sp=sd.tafels[ti].spelers;return[[[sp[0],sp[1]],[sp[2],sp[3]]],[[sp[0],sp[2]],[sp[1],sp[3]]],[[sp[0],sp[3]],[sp[1],sp[2]]]][bn-1];}
+function getSdScore(ti){const sd=getSd();if(!sd.scores)sd.scores={};const k='t'+ti;if(!sd.scores[k])sd.scores[k]={b1:{A:'',B:''},b2:{A:'',B:''},b3:{A:'',B:''}};return sd.scores[k];}
+function updSc(ti,b,d,v){const sd=getSd();if(!sd)return;const k='t'+ti;if(!sd.scores)sd.scores={};if(!sd.scores[k])sd.scores[k]={b1:{A:'',B:''},b2:{A:'',B:''},b3:{A:'',B:''}};sd.scores[k][b][d]=v;save();renderScores();}
+function scoreVolledig(){const sd=getSd();if(!sd||!(sd.tafels||[]).length)return false;for(let idx=0;idx<sd.tafels.length;idx++){const sc=getSdScore(idx);for(let bn=1;bn<=3;bn++){const bk='b'+bn;if(sc[bk].A===''||sc[bk].B==='')return false;}}return true;}
+function renderScores(){const el=document.getElementById('tab-scores');const sd=getSd();if(!sd||!(sd.tafels||[]).length){el.innerHTML='<div class="card"><div style="color:var(--text3);font-size:13px">Doe eerst de loting.</div></div>';return;}const totBomen=sd.tafels.length*3;let ingevuld=0;for(let idx=0;idx<sd.tafels.length;idx++){const sc=getSdScore(idx);for(let bn=1;bn<=3;bn++){const bk='b'+bn;if(sc[bk].A!==''&&sc[bk].B!=='')ingevuld++;}}const pct=Math.round((ingevuld/totBomen)*100);const vol=scoreVolledig();const shortNames=buildShortNames(sd.aanwezigen);const groepen={};sd.tafels.forEach((t,idx)=>{const r=t.tafel.ruimte;if(!groepen[r])groepen[r]=[];groepen[r].push({t,idx});});let html=`<div class="score-status-bar"><span style="font-size:12px;color:var(--text2);white-space:nowrap">${ingevuld}/${totBomen} bomen</span><div class="progress-bar"><div class="progress-fill ${vol?'done':''}" style="width:${pct}%"></div></div><span style="font-size:12px;font-weight:500;white-space:nowrap">${pct}%</span></div>`;for(const[ruimte,ts]of Object.entries(groepen)){html+=`<div class="section-title" style="margin-top:0.75rem">${ruimte}</div>`;for(const{t,idx}of ts){html+=`<div class="tafel-card" style="margin-bottom:0.6rem"><div style="font-size:13px;font-weight:600;margin-bottom:0.75rem">Tafel ${t.tafel.nr}</div>${[1,2,3].map(bn=>{const[duoA,duoB]=getDuos(idx,bn);const sc=getSdScore(idx);const vA=parseInt(sc['b'+bn].A)||0,vB=parseInt(sc['b'+bn].B)||0;const winA=vA>=101&&(vB<101||vA>vB),winB=vB>=101&&(vA<101||vB>vA);return`<div class="boom-block"><div class="boom-header">Boom ${bn}</div><div class="boom-duo-row"><div><div class="duo-label">Duo A</div><div class="duo-names">${duoA.map(id=>shortNames[id]||fn(getLid(id))).join(' + ')}</div><input class="duo-input${winA?' winner':''}" type="number" value="${sc['b'+bn].A}" placeholder="0" min="0" max="999" onchange="updSc(${idx},'b${bn}','A',this.value)"></div><div class="vs-divider">vs</div><div><div class="duo-label">Duo B</div><div class="duo-names">${duoB.map(id=>shortNames[id]||fn(getLid(id))).join(' + ')}</div><input class="duo-input${winB?' winner':''}" type="number" value="${sc['b'+bn].B}" placeholder="0" min="0" max="999" onchange="updSc(${idx},'b${bn}','B',this.value)"></div></div></div>`;}).join('')}</div>`;}}html+=`<div class="action-row" style="margin-top:0.75rem"><button class="btn btn-primary" onclick="showTab('klassement')">Update klassement</button>${vol?`<button class="btn btn-success" onclick="definitiefSd(huidigeSd)">Speeldag afsluiten</button>`:''}</div>`;el.innerHTML=`<div class="card"><div style="font-size:14px;font-weight:600;margin-bottom:0.75rem">Scores — speeldag ${sd.nr}</div>${html}</div>`;}
+function berekenKlassement(){const totaal={};LEDEN.forEach(l=>{totaal[l.id]={id:l.id,klein:0,bomen:0};});for(const[key,sd]of Object.entries(db.speeldagen)){const inclVoorlopig=sd.status!=='definitief'&&key===huidigeSd;if(sd.status!=='definitief'&&!inclVoorlopig)continue;(sd.tafels||[]).forEach((t,idx)=>{const sp=t.spelers;for(let bn=1;bn<=3;bn++){const k='t'+idx;const sc=(sd.scores||{})[k];if(!sc)continue;const bk='b'+bn;if(inclVoorlopig&&(sc[bk].A===''||sc[bk].B===''))continue;const vA=parseInt(sc[bk].A)||0,vB=parseInt(sc[bk].B)||0;const winA=vA>=101&&(vB<101||vA>vB),winB=vB>=101&&(vA<101||vB>vA);const combis=[[[sp[0],sp[1]],[sp[2],sp[3]]],[[sp[0],sp[2]],[sp[1],sp[3]]],[[sp[0],sp[3]],[sp[1],sp[2]]]];const[duoA,duoB]=combis[bn-1];for(const id of sp){if(id>60)continue;if(!totaal[id])totaal[id]={id,klein:0,bomen:0};const inA=duoA.includes(id);totaal[id].klein+=inA?vA:vB;if(inA&&winA)totaal[id].bomen+=3;if(!inA&&winB)totaal[id].bomen+=3;}}});}return Object.values(totaal).map(r=>{const l=getLid(r.id);return{...r,naam:fn(l),tot:r.bomen+r.klein};}).sort((a,b)=>b.tot-a.tot||b.klein-a.klein);}
+function renderKlassement(){const el=document.getElementById('tab-klassement');const sd=getSd();const isVoorlopig=sd&&sd.status!=='definitief';const rijen=berekenKlassement();el.innerHTML=`<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:0.75rem"><div><div style="font-size:14px;font-weight:600">Seizoen 2026-2027</div>${isVoorlopig?`<div style="font-size:11px;color:var(--warning)">Inclusief voorlopige scores speeldag ${sd.nr}</div>`:''}</div><button class="btn btn-sm" onclick="genAfbeelding()">Ververs afbeelding</button></div><div style="overflow-x:auto"><table class="klass-table"><thead><tr><th>#</th><th>Speler</th><th>Bomen</th><th>Klein</th><th>Totaal</th></tr></thead><tbody>${rijen.map((r,i)=>`<tr><td style="color:${i===0?'#fbbf24':i===1?'#94a3b8':i===2?'#cd7f32':'var(--text3)'};font-weight:${i<3?'600':'400'}">${i+1}</td><td>${r.naam}</td><td style="text-align:center">${r.bomen}</td><td style="text-align:center">${r.klein}</td><td style="font-weight:600;text-align:center">${r.tot}</td></tr>`).join('')}</tbody></table></div><div style="margin-top:0.75rem;font-size:12px;color:var(--text3)">Lang indrukken op de afbeelding om op te slaan.</div><canvas id="klass-canvas" style="display:block;max-width:100%;margin-top:0.75rem;border-radius:8px"></canvas></div>`;genAfbeelding();}
+function genAfbeelding(){const canvas=document.getElementById('klass-canvas');if(!canvas)return;const rijen=berekenKlassement();const sd=getSd();const isVoorlopig=sd&&sd.status!=='definitief';const RH=26,PAD=16,HDR=52,COLS=[30,200,64,64,64];const W=COLS.reduce((a,b)=>a+b,0)+PAD*2;const H=HDR+RH*(rijen.length+1)+PAD+(isVoorlopig?16:0);canvas.width=W*2;canvas.height=H*2;canvas.style.width=W+'px';canvas.style.height=H+'px';const ctx=canvas.getContext('2d');ctx.scale(2,2);ctx.fillStyle='#0f172a';ctx.fillRect(0,0,W,H);ctx.fillStyle='#1e293b';ctx.fillRect(0,0,W,HDR);ctx.font='bold 15px system-ui,sans-serif';ctx.fillStyle='#f1f5f9';ctx.textAlign='left';ctx.fillText('De Statiemanillers',PAD,HDR/2+5);ctx.font='11px system-ui,sans-serif';ctx.fillStyle='#64748b';ctx.textAlign='right';ctx.fillText('Seizoen 2026-2027',W-PAD,HDR/2+5);const hdrs=['#','Speler','Bomen','Klein','Totaal'],aligns=['center','left','center','center','center'];let x=PAD;ctx.font='bold 9px system-ui,sans-serif';ctx.fillStyle='#475569';hdrs.forEach((h,i)=>{ctx.textAlign=aligns[i];const cx=i===0?x+COLS[i]/2:i===1?x+2:x+COLS[i];ctx.fillText(h.toUpperCase(),cx,HDR+13);x+=COLS[i];});ctx.strokeStyle='#334155';ctx.lineWidth=0.5;ctx.beginPath();ctx.moveTo(PAD,HDR+18);ctx.lineTo(W-PAD,HDR+18);ctx.stroke();rijen.forEach((r,ri)=>{const y=HDR+RH*(ri+1)+RH/2+4;if(ri%2===0){ctx.fillStyle='rgba(255,255,255,0.025)';ctx.fillRect(0,HDR+RH*ri+RH,W,RH);}x=PAD;[ri+1,r.naam,r.bomen,r.klein,r.tot].forEach((v,i)=>{ctx.textAlign=aligns[i];const cx=i===0?x+COLS[i]/2:i===1?x+2:x+COLS[i];const medal=ri===0?'🥇':ri===1?'🥈':ri===2?'🥉':null;if(i===0&&medal){ctx.font='13px serif';ctx.fillStyle='#f1f5f9';ctx.fillText(medal,cx,y);}else{ctx.font=i===4?'bold 11px system-ui,sans-serif':'11px system-ui,sans-serif';ctx.fillStyle=ri===0?'#fbbf24':ri===1?'#cbd5e1':ri===2?'#cd7f32':i===4?'#e2e8f0':'#94a3b8';ctx.fillText(String(v),cx,y);}x+=COLS[i];});});if(isVoorlopig){ctx.font='9px system-ui,sans-serif';ctx.fillStyle='#64748b';ctx.textAlign='left';ctx.fillText(`Voorlopige stand inclusief speeldag ${sd.nr}`,PAD,H-6);}}
+showTab('speeldagen');
+</script>
+</body>
+</html>
